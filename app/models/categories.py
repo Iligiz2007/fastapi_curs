@@ -1,24 +1,29 @@
-from sqlalchemy import Integer, String, Boolean
+from sqlalchemy import ForeignKey, Integer, String, Boolean
 
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column,relationship
 
 from app.database import Base
 
 
-"""class Category(Base):
+class Category(Base):
     __tablename__ = 'categories'
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     name: Mapped[str] = mapped_column(String(50), nullable=False)
+    parent_id: Mapped[int | None] = mapped_column(ForeignKey("categories.id"), nullable=True)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
-"""
+    
+    products: Mapped[list["Product"]] = relationship("Product",back_populates="category")
+
+    parent: Mapped["Category | None"] = relationship("Category",
+                                                        back_populates="children",
+                                                        remote_side="Category.id")
+    children: Mapped[list["Category"]] = relationship("Category",
+                                                        back_populates="parent",)
 
 
-from sqlalchemy.orm import DeclarativeBase
-class Base(DeclarativeBase):
-    pass
+if __name__ == "__main__":
+    from sqlalchemy.schema import CreateTable
+    from app.models.products import Product
 
-class Task(Base):
-    __tablename__ = 'tasks'
-    id:Mapped[int] = mapped_column(Integer,primary_key=True,)
-    title: Mapped[str] = mapped_column(String(100),nullable=False,)
-    is_completed:Mapped[bool] = mapped_column(Boolean,nullable=False,default=False)
+    print(CreateTable(Category.__table__))
+    print(CreateTable(Product.__table__))
