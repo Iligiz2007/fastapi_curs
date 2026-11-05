@@ -21,9 +21,3 @@ class Category(Base):
                                                         back_populates="parent",)
 
 
-if __name__ == "__main__":
-    from sqlalchemy.schema import CreateTable
-    from app.models.products import Product
-
-    print(CreateTable(Category.__table__))
-    print(CreateTable(Product.__table__))
